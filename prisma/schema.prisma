@@ -11,6 +11,8 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+//  binaryTargets = ["native", "linux-musl", "linux-musl-arm64-openssl-3.0.x"]
+//  schema   = "traffic-app"
 }
 
 model Traffic {

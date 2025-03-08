@@ -10,7 +10,10 @@ export class TrafficService {
       by: ['country'],
       _sum: { count: true },
     });
-
+    return data.map((item) => ({
+      country: item.country,
+      count: item._sum.count,
+    }));
     return data;
   }
 
@@ -20,6 +23,10 @@ export class TrafficService {
       _sum: { count: true },
     });
 
+    return data.map((item) => ({
+      vehicleType: item.vehicleType,
+      count: item._sum.count,
+    }));
     return data;
   }
 }
