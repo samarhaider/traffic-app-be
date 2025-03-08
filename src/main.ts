@@ -1,20 +1,18 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { CacheInterceptor } from '@nestjs/cache-manager';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-import { Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AllExceptionsFilter } from './filters/all-exceptions.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+  }); // ✅ Enable logging
 
-  // Get instances from Nest's DI container
-  const cacheManager = app.get<Cache>(CACHE_MANAGER);
-  const reflector = app.get(Reflector);
+  // ✅ Ensure HttpAdapterHost is retrieved after NestJS is created
+  const httpAdapterHost = app.get(HttpAdapterHost);
 
-  // Pass Reflector as the first argument, CacheManager as the second
-  app.useGlobalInterceptors(new CacheInterceptor(cacheManager, reflector));
+  // ✅ Now apply the exception filter
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));
 
   // Swagger configuration
   const config = new DocumentBuilder()
@@ -26,6 +24,9 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
+
+  // ✅ Enable CORS with default settings
+  app.enableCors();
 
   await app.listen(3000);
 }
