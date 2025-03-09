@@ -2,7 +2,7 @@
 FROM node:20-alpine AS builder
 
 # Install necessary dependencies for Prisma
-RUN apk add --no-cache openssl1.1-compat
+RUN apk update && apk search openssl
 
 # Set working directory
 WORKDIR /app
@@ -27,7 +27,7 @@ RUN yarn build
 FROM node:20-alpine AS runtime
 
 # Install necessary dependencies for Prisma runtime
-RUN apk add --no-cache openssl1.1-compat
+RUN apk update && apk search openssl
 
 # Set working directory
 WORKDIR /app
@@ -38,8 +38,11 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY package.json .
 
+# Copy the rest of the application
+COPY . .
+
 # Expose the port
 EXPOSE 3000
 
 # Start the application
-CMD ["node", "dist/main"]
+CMD ["yarn", "start"]
