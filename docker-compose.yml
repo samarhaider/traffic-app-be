@@ -24,7 +24,7 @@ services:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: traffic-app
     ports:
-      - "3307:3306"
+      - "3306:3306"
     networks:
       - app-network
     volumes:
